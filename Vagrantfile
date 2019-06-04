@@ -9,18 +9,21 @@ Vagrant.configure("2") do |db|
 
   db.vm.box = "maier/alpine-3.6-x86_64"
   db.vm.network "forwarded_port", guest: 3306, host: 3306
-  #db.vm.network "private_network", ip: "10.0.0.11", auto_config: false
+  db.vm.network "private_network", ip: "10.0.0.11", auto_config: false
   db.vm.synced_folder "./", "/dbinit.d"
 
   db.vm.provision :shell do |shell|
-      #shell.env = {MYSQL_ROOT_PASSWORD:ENV['111111']}
+      #shell.env = {MYSQL_ROOT_PASS:ENV['111111']}
       shell.inline = <<-SHELL
         sudo su
 	apk update && apk upgrade
 	apk add mysql mysql-client
   	cp /dbinit.d/my.cnf /etc/mysql/my.cnf
-	mv /dbinit.d/startup.sh /
-	#export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+	cp /dbinit.d/startup.sh /vagrant/
+	cp /dbinit.d/startup.sh /
+	cat /dbinit.d/mysql_eth1.txt >> /etc/network/interfaces
+	/etc/init.d/networking restart
+	#export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
 	#echo ----------
 	#echo $MYSQL_ROOT_PASSWORD
 	#MYSQL_DATABASE=automosmobile

@@ -1,17 +1,13 @@
 #!/bin/sh
 
-#export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-#echo $MYSQL_ROOT_PASSWORD
+if [ -f "/pre-init.sh" ]; then
+  /pre-init.sh
+fi
 
 MYSQL_DATABASE=automosmobile
 MYSQL_USER=mosu
 MYSQL_PASSWORD=123
 MYSQL_ROOT_PASSWORD=111111
-
-
-if [ -f "/pre-init.sh" ]; then
-  /pre-init.sh
-fi
 
 [ "$DEBUG" == 'true' ] && set -x
 
@@ -21,7 +17,6 @@ else
   echo "[i] MySQL data directory not found, creating initial DBs"
 
   if [ "$MYSQL_ROOT_PASSWORD" = "" ]; then
-    echo ' nu s-a transmis'
     echo '[e] $MYSQL_ROOT_PASSWORD missing.'
     exit 1
   else
@@ -83,7 +78,7 @@ EOF
 
     for f in /dbinit.d/*; do
       case "$f" in
-        *.sh)  echo "[dbinit.d] running $f"; . "$f" ;;
+        #*.sh)  echo "[dbinit.d] running $f"; . "$f" ;;
         *.sql) echo "[dbinit.d] running $f"; mysql --socket="${SOCKET}" -hlocalhost "${MYSQL_DATABASE}" < "$f";;
         *)     echo "[dbinit.d] ignoring $f" ;;
       esac
